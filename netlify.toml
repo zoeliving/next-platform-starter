@@ -5,3 +5,7 @@
 [build.environment]
   NODE_ENV = "production"
   NODE_VERSION = "18.20.0"  # Specify the exact version here
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+  
