@@ -4,4 +4,4 @@
 
 [build.environment]
   NODE_ENV = "production"
-  NODE_VERSION = "18.x" 
+  NODE_VERSION = "18..20.0"  # Specify the exact version here
