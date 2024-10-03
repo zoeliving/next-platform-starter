@@ -1,49 +1,63 @@
-// Inside page.jsx or any component where you are fetching data
-import { useEffect, useState } from 'react';
+import React from 'react';
 
-export default function Page() {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(process.env.NEXT_PUBLIC_WORDPRESS_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: `
-            query {
-              posts {
-                edges {
-                  node {
-                    title
-                    slug
-                  }
-                }
+export async function getStaticProps() {
+  const res = await fetch(process.env.NEXT_PUBLIC_WORDPRESS_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        query {
+          posts {
+            edges {
+              node {
+                title
+                slug
               }
             }
-          `,
-        }),
-      });
+          }
+        }
+      `,
+    }),
+  });
 
-      const json = await res.json();
-      setData(json.data.posts.edges);
+  if (!res.ok) {
+    console.error("Failed to fetch data from WordPress.");
+    return {
+      notFound: true,
     };
+  }
 
-    fetchData();
-  }, []);
+  const json = await res.json();
 
-  if (!data) return <p>Loading...</p>;
+  // Check if the response contains valid data
+  if (!json.data || !json.data.posts) {
+    return {
+      notFound: true,
+    };
+  }
 
+  return {
+    props: {
+      posts: json.data.posts.edges,
+    },
+    revalidate: 60, // Rebuild the page at most once every 60 seconds (optional)
+  };
+}
+
+const Page = ({ posts }) => {
   return (
     <div>
       <h1>Blog Posts</h1>
       <ul>
-        {data.map(({ node }) => (
+        {posts.map(({ node }) => (
           <li key={node.slug}>{node.title}</li>
         ))}
       </ul>
     </div>
   );
-}
+};
+
+export default Page;
+
