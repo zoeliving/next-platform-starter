@@ -1,6 +1,6 @@
 import { request, gql } from 'graphql-request';
 
-export async function getStaticProps() {
+export default async function Page() {
   const endpoint = process.env.WP_GRAPHQL_API || 'https://patchingtohealth.com/graphql';
 
   // Define your GraphQL query to get posts from WordPress
@@ -22,15 +22,8 @@ export async function getStaticProps() {
 
   // Fetch data from WordPress using graphql-request
   const data = await request(endpoint, query);
+  const posts = data.posts.nodes;
 
-  return {
-    props: {
-      posts: data.posts.nodes,
-    },
-  };
-}
-
-export default function Page({ posts }) {
   return (
     <main className="flex flex-col gap-8 sm:gap-16">
       <section className="flex flex-col items-start gap-3 sm:gap-4">
