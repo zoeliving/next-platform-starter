@@ -1,6 +1,7 @@
 import React from 'react';
 
 export async function getStaticProps() {
+  // Fetch data from your WordPress GraphQL API
   const res = await fetch(process.env.NEXT_PUBLIC_WORDPRESS_API_URL, {
     method: 'POST',
     headers: {
@@ -8,12 +9,13 @@ export async function getStaticProps() {
     },
     body: JSON.stringify({
       query: `
-        query {
-          posts {
+        query GetPages {
+          pages {
             edges {
               node {
                 title
                 slug
+                content
               }
             }
           }
@@ -22,16 +24,11 @@ export async function getStaticProps() {
     }),
   });
 
-  if (!res.ok) {
-    console.error("Failed to fetch data from WordPress.");
-    return {
-      notFound: true,
-    };
-  }
-
+  // Parse the JSON response
   const json = await res.json();
 
-  if (!json.data || !json.data.posts) {
+  // Check if the data is valid
+  if (!json?.data?.pages?.edges) {
     return {
       notFound: true,
     };
@@ -39,19 +36,21 @@ export async function getStaticProps() {
 
   return {
     props: {
-      posts: json.data.posts.edges,
+      pages: json.data.pages.edges,
     },
-    revalidate: 60,
   };
 }
 
-const HomePage = ({ posts }) => {
+const HomePage = ({ pages }) => {
   return (
     <div>
-      <h1>Blog Posts</h1>
+      <h1>Pages</h1>
       <ul>
-        {posts.map(({ node }) => (
-          <li key={node.slug}>{node.title}</li>
+        {pages.map(({ node }) => (
+          <li key={node.slug}>
+            <h2>{node.title}</h2>
+            <div dangerouslySetInnerHTML={{ __html: node.content }} />
+          </li>
         ))}
       </ul>
     </div>
