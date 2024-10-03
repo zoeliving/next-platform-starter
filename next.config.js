@@ -4,6 +4,9 @@ const nextConfig = {
   output: 'standalone',  // This generates a production-ready package for deployment.
 };
 
-module.exports = nextConfig;
+module.exports = {
+  output: 'export',
+  reactStrictMode: true,
+};
 
 
