@@ -1,6 +1,6 @@
 [build]
   publish = ".next"
-  command = "npm run build"
+  command = "npm ci && npm run build"  # Force clean install of dependencies
 
 [build.environment]
   NODE_ENV = "production"
