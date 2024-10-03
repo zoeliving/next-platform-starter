@@ -36,22 +36,8 @@ export async function getStaticProps() {
   };
 }
 
-constFaqPage = ({ page }) => {
+const FaqPage = ({ page }) => {
   useEffect(() => {
     // Dynamically add Elementor's CSS for the page
     if (page.elementorCss) {
-      const style = document.createElement('style');
-      style.innerHTML = page.elementorCss;
-      document.head.appendChild(style);
-    }
-  }, [page]);
-
-  return (
-    <div>
-      <h1>{page.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: page.content }} />
-    </div>
-  );
-};
-
-export default FaqPage;
+      const style =
