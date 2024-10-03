@@ -9,7 +9,7 @@ export async function getStaticProps() {
     },
     body: JSON.stringify({
       query: `
-        query GetfaqPage {
+        query GetFaqPage {
           page(id: "faq", idType: URI) {
             title
             content
@@ -36,7 +36,7 @@ export async function getStaticProps() {
   };
 }
 
-constfaqPage = ({ page }) => {
+constFaqPage = ({ page }) => {
   useEffect(() => {
     // Dynamically add Elementor's CSS for the page
     if (page.elementorCss) {
@@ -54,4 +54,4 @@ constfaqPage = ({ page }) => {
   );
 };
 
-export default faqPage;
+export default FaqPage;
