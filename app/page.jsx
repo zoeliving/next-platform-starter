@@ -1,47 +1,49 @@
-import { request, gql } from 'graphql-request';
+// Inside page.jsx or any component where you are fetching data
+import { useEffect, useState } from 'react';
 
-export default async function Page() {
-  const endpoint = process.env.WP_GRAPHQL_API || 'https://patchingtohealth.com/graphql';
+export default function Page() {
+  const [data, setData] = useState(null);
 
-  // Define your GraphQL query to get posts from WordPress
-  const query = gql`
-    {
-      posts {
-        nodes {
-          title
-          content
-          featuredImage {
-            node {
-              sourceUrl
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(process.env.NEXT_PUBLIC_WORDPRESS_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            query {
+              posts {
+                edges {
+                  node {
+                    title
+                    slug
+                  }
+                }
+              }
             }
-          }
-        }
-      }
-    }
-  `;
+          `,
+        }),
+      });
 
-  // Fetch data from WordPress using graphql-request
-  const data = await request(endpoint, query);
-  const posts = data.posts.nodes;
+      const json = await res.json();
+      setData(json.data.posts.edges);
+    };
+
+    fetchData();
+  }, []);
+
+  if (!data) return <p>Loading...</p>;
 
   return (
-    <main className="flex flex-col gap-8 sm:gap-16">
-      <section className="flex flex-col items-start gap-3 sm:gap-4">
-        <h1 className="mb-0">Blog Posts</h1>
-        <p className="text-lg">Fetched from WordPress using GraphQL</p>
-      </section>
-      
-      <section className="flex flex-col gap-4">
-        <ul>
-          {posts.map((post, index) => (
-            <li key={index}>
-              <h2>{post.title}</h2>
-              <img src={post.featuredImage?.node?.sourceUrl} alt={post.title} />
-              <div dangerouslySetInnerHTML={{ __html: post.content }} />
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
+    <div>
+      <h1>Blog Posts</h1>
+      <ul>
+        {data.map(({ node }) => (
+          <li key={node.slug}>{node.title}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
