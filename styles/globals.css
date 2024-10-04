@@ -34,3 +34,12 @@ a {
 .btn:disabled {
     @apply text-neutral-400 bg-neutral-700;
 }
+
+/* styles/globals.css */
+
+/* Example custom global styling */
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* Add other styles here as needed */
